@@ -19,7 +19,7 @@ const Navbar = () => {
   }
 
   const goToUserPanel = () => {
-    window.location.href = 'https://appointy-roan.vercel.app/'
+    window.location.href = 'http://localhost:5173'
   }
 
   const isOnDashboard =
@@ -30,14 +30,17 @@ const Navbar = () => {
     <div className='flex justify-between items-center px-4 sm:px-10 py-3 border-b bg-white'>
       <div className='flex items-center gap-3 text-xs'>
 
-        {/* Logo */}
-        <img
-          onClick={() => navigate('/')}
-          className='w-36 sm:w-40 cursor-pointer'
-          src={assets.admin_logo}
-          alt="Logo"
-        />
-
+      <img
+        onClick={() => navigate('/')}
+        src={assets.a}
+        alt="Healio Logo"
+        className="
+          h-10 
+          w-auto 
+          cursor-pointer 
+          object-contain
+        "
+      />
         {/* Role Label */}
         <p className='border px-2.5 py-0.5 rounded-full border-gray-500 text-gray-600'>
           {aToken ? 'Admin' : 'Doctor'}

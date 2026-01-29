@@ -21,13 +21,11 @@ const App = () => {
   const { aToken } = useContext(AdminContext)
   const location = useLocation()
 
-  // Redirect "/" to the proper dashboard
   if (location.pathname === '/') {
     if (aToken) return <Navigate to="/admin-dashboard" replace />
     if (dToken) return <Navigate to="/doctor-dashboard" replace />
   }
 
-  // Admin layout and routes
   if (aToken) {
     return (
       <div className='bg-[#F8F9FD]'>
@@ -47,7 +45,6 @@ const App = () => {
     )
   }
 
-  // Doctor layout and routes
   if (dToken) {
     return (
       <div className='bg-[#F8F9FD]'>
@@ -66,7 +63,6 @@ const App = () => {
     )
   }
 
-  // No one is logged in
   return (
     <>
       <ToastContainer />

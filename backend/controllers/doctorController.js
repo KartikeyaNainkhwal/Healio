@@ -95,16 +95,14 @@ const doctorList = async (req, res) => {
     if (!docId) {
       return res.status(400).json({ success: false, message: "Doctor ID missing" });
     }
-
+    
     const doctor = await doctorModel.findById(docId);
-
     if (!doctor) {
       return res.status(404).json({ success: false, message: "Doctor not found" });
     }
 
     doctor.available = !doctor.available;
     await doctor.save();
-
     res.json({ success: true, message: "Availability changed successfully" });
   } catch (error) {
     console.error(error);

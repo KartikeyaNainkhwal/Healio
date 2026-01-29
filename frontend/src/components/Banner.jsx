@@ -1,29 +1,34 @@
-import React from 'react'
-import { assets } from '../assets/assets'
-import { useNavigate } from 'react-router-dom'
+import React from "react";
+import { useNavigate } from "react-router-dom";
 
 const Banner = () => {
+  const navigate = useNavigate();
 
-    const navigate = useNavigate()
+  return (
+    <div className="relative overflow-hidden my-24 md:mx-10 rounded-2xl bg-gradient-to-br from-[#4F46E5] to-[#2563EB] px-6 sm:px-10 md:px-16 py-16 md:py-20 text-center">
+      <div className="absolute -top-20 -right-20 w-72 h-72 bg-white/10 rounded-full blur-3xl"></div>
+      <div className="absolute -bottom-20 -left-20 w-72 h-72 bg-white/10 rounded-full blur-3xl"></div>
 
-    return (
-        <div className='flex bg-primary rounded-lg  px-6 sm:px-10 md:px-14 lg:px-12 my-20 md:mx-10'>
+      <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold text-white leading-tight">
+        Book appointments with trusted doctors
+      </h2>
 
-            {/* ------- Left Side ------- */}
-            <div className='flex-1 py-8 sm:py-10 md:py-16 lg:py-24 lg:pl-5'>
-                <div className='text-xl sm:text-2xl md:text-3xl lg:text-5xl font-semibold text-white'>
-                    <p>Book Appointment</p>
-                    <p className='mt-4'>With 100+ Trusted Doctors</p>
-                </div>
-                <button onClick={() => { navigate('/login'); scrollTo(0, 0) }} className='bg-white text-sm sm:text-base text-[#595959] px-8 py-3 rounded-full mt-6 hover:scale-105 transition-all '>Create account</button>
-            </div>
+      <p className="mt-4 text-white/80 max-w-2xl mx-auto text-sm sm:text-base">
+        Healio helps patients discover verified doctors and manage appointments
+        effortlessly with a clean, reliable, and modern healthcare experience.
+      </p>
 
-            {/* ------- Right Side ------- */}
-            <div className='hidden md:block md:w-1/2 lg:w-[370px] relative'>
-                <img className='w-full absolute bottom-0 right-0 max-w-md' src={assets.appointment_img} alt="" />
-            </div>
-        </div>
-    )
-}
+      <button
+        onClick={() => {
+          navigate("/login");
+          scrollTo(0, 0);
+        }}
+        className="mt-8 inline-flex items-center justify-center bg-white text-[#1E3A8A] px-10 py-3 rounded-full font-medium hover:scale-105 transition"
+      >
+        Create free account
+      </button>
+    </div>
+  );
+};
 
-export default Banner
+export default Banner;

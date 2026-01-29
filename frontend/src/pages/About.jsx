@@ -1,45 +1,83 @@
-import React from 'react'
-import { assets } from '../assets/assets'
+import React from "react";
 
 const About = () => {
   return (
-    <div>
+    <section className="bg-white overflow-hidden">
 
-      <div className='text-center text-2xl pt-10 text-[#707070]'>
-        <p>ABOUT <span className='text-gray-700 font-semibold'>US</span></p>
-      </div>
+      <div className="max-w-6xl mx-auto px-6 pt-28 pb-24 grid md:grid-cols-2 gap-16 items-center">
 
-      <div className='my-10 flex flex-col md:flex-row gap-12'>
-        <img className='w-full md:max-w-[360px]' src={assets.about_image} alt="" />
-        <div className='flex flex-col justify-center gap-6 md:w-2/4 text-sm text-gray-600'>
-          <p>Welcome to Appointy, your trusted partner in managing your healthcare needs conveniently and efficiently. At Appointy, we understand the challenges individuals face when it comes to scheduling doctor appointments and managing their health records.</p>
-          <p>Appointy is committed to excellence in healthcare technology. We continuously strive to enhance our platform, integrating the latest advancements to improve user experience and deliver superior service. Whether you're booking your first appointment or managing ongoing care, Appointy is here to support you every step of the way.</p>
-          <b className='text-gray-800'>Our Vision</b>
-          <p>Our vision at Appointy is to create a seamless healthcare experience for every user. We aim to bridge the gap between patients and healthcare providers, making it easier for you to access the care you need, when you need it.</p>
+        <div>
+          <h1 className="text-5xl md:text-6xl font-semibold text-gray-900 leading-tight">
+            Healthcare, <br /> simplified for humans.
+          </h1>
+          <p className="mt-6 text-lg text-gray-500 max-w-xl">
+            Healio is built to remove friction from healthcare — helping patients
+            connect with verified doctors, instantly and confidently.
+          </p>
+        </div>
+
+        <div className="relative">
+          <div className="absolute -inset-4 bg-blue-100/40 rounded-3xl blur-2xl"></div>
+          <img
+            src="https://dratdoorstep.com/wp-content/uploads/2025/07/dr-at-door-website-home-page-dr-image-2.jpg"
+            alt="Healthcare"
+            className="relative z-10 w-full rounded-3xl shadow-xl"
+          />
         </div>
       </div>
 
-      <div className='text-xl my-4'>
-        <p>WHY  <span className='text-gray-700 font-semibold'>CHOOSE US</span></p>
+      <div className="border-t border-gray-200 max-w-6xl mx-auto" />
+
+      <div className="max-w-4xl mx-auto px-6 py-24 space-y-10 text-gray-700 text-lg leading-relaxed">
+        <p>
+          Healthcare should feel calm, clear, and supportive — not confusing.
+          But for too long, patients have struggled with outdated systems and slow processes.
+        </p>
+        <p>
+          Healio changes that. We bring real-time availability, verified doctors,
+          and instant booking together in one seamless experience.
+        </p>
+        <p>
+          Whether you’re visiting a clinic or managing long-term care, Healio
+          is designed to stay simple, reliable, and fast.
+        </p>
       </div>
 
-      <div className='flex flex-col md:flex-row mb-20'>
-        <div className='border px-10 md:px-16 py-8 sm:py-16 flex flex-col gap-5 text-[15px] hover:bg-primary hover:text-white transition-all duration-300 text-gray-600 cursor-pointer'>
-          <b>EFFICIENCY:</b>
-          <p>Streamlined appointment scheduling that fits into your busy lifestyle.</p>
-        </div>
-        <div className='border px-10 md:px-16 py-8 sm:py-16 flex flex-col gap-5 text-[15px] hover:bg-primary hover:text-white transition-all duration-300 text-gray-600 cursor-pointer'>
-          <b>CONVENIENCE: </b>
-          <p>Access to a network of trusted healthcare professionals in your area.</p>
-        </div>
-        <div className='border px-10 md:px-16 py-8 sm:py-16 flex flex-col gap-5 text-[15px] hover:bg-primary hover:text-white transition-all duration-300 text-gray-600 cursor-pointer'>
-          <b>PERSONALIZATION:</b>
-          <p >Tailored recommendations and reminders to help you stay on top of your health.</p>
+      <div className="bg-gray-50 border-t border-b">
+        <div className="max-w-6xl mx-auto px-6 py-20 grid md:grid-cols-3 gap-12 text-center">
+          <div>
+            <p className="text-sm text-gray-400 uppercase tracking-widest">Clarity</p>
+            <p className="mt-3 text-lg font-medium text-gray-800">
+              Clear steps. Clear choices.
+            </p>
+          </div>
+          <div>
+            <p className="text-sm text-gray-400 uppercase tracking-widest">Trust</p>
+            <p className="mt-3 text-lg font-medium text-gray-800">
+              Verified professionals. Secure data.
+            </p>
+          </div>
+          <div>
+            <p className="text-sm text-gray-400 uppercase tracking-widest">Speed</p>
+            <p className="mt-3 text-lg font-medium text-gray-800">
+              Appointments in seconds.
+            </p>
+          </div>
         </div>
       </div>
 
-    </div>
-  )
-}
+      {/* CLOSING */}
+      <div className="max-w-4xl mx-auto px-6 py-28 text-center">
+        <p className="text-2xl font-medium text-gray-900">
+          Built for patients. Designed for trust.
+        </p>
+        <p className="mt-4 text-lg text-gray-500">
+          Healio is the future of accessible healthcare.
+        </p>
+      </div>
 
-export default About
+    </section>
+  );
+};
+
+export default About;

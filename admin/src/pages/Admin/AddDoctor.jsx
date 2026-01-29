@@ -3,11 +3,12 @@ import { assets } from '../../assets/assets'
 import { toast } from 'react-toastify'
 import axios from 'axios'
 import { AdminContext } from '../../context/AdminContext'
-import { AppContext } from '../../context/AppContext'
 
 const AddDoctor = () => {
 
-  const [docImg, setDocImg] = useState(false)
+  const [docImg, setDocImg] = useState(null)
+  const [loading, setLoading] = useState(false)
+
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -19,158 +20,244 @@ const AddDoctor = () => {
   const [address1, setAddress1] = useState('')
   const [address2, setAddress2] = useState('')
 
-  const { backendUrl } = useContext(AdminContext)
-  const { aToken } = useContext(AdminContext)
+  const { backendUrl, aToken } = useContext(AdminContext)
 
-  const onSubmitHandler = async (event) => {
-    event.preventDefault();
+  const handleImageChange = (e) => {
+    const file = e.target.files[0]
+    if (!file) return
+
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please upload a valid image')
+      return
+    }
+
+    setDocImg(file)
+  }
+
+  const resetForm = () => {
+    setDocImg(null)
+    setName('')
+    setEmail('')
+    setPassword('')
+    setExperience('1 Year')
+    setFees('')
+    setAbout('')
+    setSpeciality('General physician')
+    setDegree('')
+    setAddress1('')
+    setAddress2('')
+  }
+
+  const onSubmitHandler = async (e) => {
+    e.preventDefault()
+
+    if (!docImg) return toast.error('Doctor image is required')
 
     try {
-      if (!docImg) {
-        return toast.error('Image Not Selected');
-      }
+      setLoading(true)
 
-      const formData = new FormData();
+      const formData = new FormData()
+      formData.append('image', docImg)
+      formData.append('name', name)
+      formData.append('email', email)
+      formData.append('password', password)
+      formData.append('experience', experience)
+      formData.append('fees', Number(fees))
+      formData.append('about', about)
+      formData.append('speciality', speciality)
+      formData.append('degree', degree)
+      formData.append(
+        'address',
+        JSON.stringify({ line1: address1, line2: address2 })
+      )
 
-      formData.append('image', docImg);
-      formData.append('name', name);
-      formData.append('email', email);
-      formData.append('password', password);
-      formData.append('experience', experience);
-      formData.append('fees', Number(fees));
-      formData.append('about', about);
-      formData.append('speciality', speciality);
-      formData.append('degree', degree);
-      formData.append('address', JSON.stringify({ line1: address1, line2: address2 }));
+      const { data } = await axios.post(
+        `${backendUrl}/api/admin/add-doctor`,
+        formData,
+        { headers: { atoken: aToken } }
+      )
 
-      // Debugging FormData (optional, can remove later)
-      formData.forEach((value, key) => {
-        console.log(`${key}: ${value}`);
-      });
-
-      const response = await axios.post(`${backendUrl}/api/admin/add-doctor`, formData, {
-        headers: { aToken}  })
-      const data= response.data;
       if (data.success) {
-                toast.success(data.message)
-                setDocImg(false)
-                setName('')
-                setPassword('')
-                setEmail('')
-                setAddress1('')
-                setAddress2('')
-                setDegree('')
-                setAbout('')
-                setFees('')
-            } else {
-                toast.error(data.message)
-            }
-
+        toast.success(data.message)
+        resetForm()
+      } else {
+        toast.error(data.message)
+      }
     } catch (error) {
-      toast.error(error?.response?.data?.message || error.message);
-      console.error(error);
+      toast.error(error?.response?.data?.message || error.message)
+    } finally {
+      setLoading(false)
     }
   }
 
 
   return (
-    <form onSubmit={onSubmitHandler} className='m-5 w-full'>
+    <form
+      onSubmit={onSubmitHandler}
+      className="p-6 bg-gray-50 min-h-screen"
+    >
+      <h1 className="text-2xl font-semibold text-gray-800 mb-6">
+        Add New Doctor
+      </h1>
 
-      <p className='mb-3 text-lg font-medium'>Add Doctor</p>
-
-      <div className='bg-white px-8 py-8 border rounded w-full max-w-4xl max-h-[80vh] overflow-y-scroll'>
-        <div className='flex items-center gap-4 mb-8 text-gray-500'>
-          <label htmlFor="doc-img">
-            <img className='w-16 bg-gray-100 rounded-full cursor-pointer' src={docImg ? URL.createObjectURL(docImg) : assets.upload_area} alt="" />
+      <div className="bg-white rounded-2xl shadow-md p-8 max-w-5xl">
+        <div className="flex items-center gap-6 mb-10">
+          <label htmlFor="doc-img" className="relative cursor-pointer">
+            <img
+              src={
+                docImg
+                  ? URL.createObjectURL(docImg)
+                  : assets.upload_area
+              }
+              alt=""
+              className="w-20 h-20 rounded-full object-cover border-2 border-dashed border-gray-300"
+            />
+            <span className="absolute bottom-0 right-0 bg-primary text-white text-xs px-2 py-0.5 rounded-full">
+              Edit
+            </span>
           </label>
-          <input onChange={(e) => setDocImg(e.target.files[0])} type="file" name="" id="doc-img" hidden />
-          <p>Upload doctor <br /> picture</p>
+          <input
+            type="file"
+            id="doc-img"
+            hidden
+            onChange={handleImageChange}
+          />
+          <p className="text-sm text-gray-500">
+            Upload doctor profile picture
+          </p>
         </div>
 
-        <div className='flex flex-col lg:flex-row items-start gap-10 text-gray-600'>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 text-gray-600">
+          <div className="space-y-4">
+            <Input label="Doctor Name" value={name} setValue={setName} />
+            <Input label="Email" type="email" value={email} setValue={setEmail} />
+            <Input
+              label="Password"
+              type="password"
+              value={password}
+              setValue={setPassword}
+            />
 
-          <div className='w-full lg:flex-1 flex flex-col gap-4'>
+            <Select
+              label="Experience"
+              value={experience}
+              setValue={setExperience}
+              options={[
+                '1 Year',
+                '2 Years',
+                '3 Years',
+                '4 Years',
+                '5 Years',
+                '6 Years',
+                '8 Years',
+                '9 Years',
+                '10+ Years',
+              ]}
+            />
 
-            <div className='flex-1 flex flex-col gap-1'>
-              <p>Your name</p>
-              <input onChange={e => setName(e.target.value)} value={name} className='border rounded px-3 py-2' type="text" placeholder='Name' required />
-            </div>
-
-            <div className='flex-1 flex flex-col gap-1'>
-              <p>Doctor Email</p>
-              <input onChange={e => setEmail(e.target.value)} value={email} className='border rounded px-3 py-2' type="email" placeholder='Email' required />
-            </div>
-
-
-            <div className='flex-1 flex flex-col gap-1'>
-              <p>Set Password</p>
-              <input onChange={e => setPassword(e.target.value)} value={password} className='border rounded px-3 py-2' type="password" placeholder='Password' required />
-            </div>
-
-            <div className='flex-1 flex flex-col gap-1'>
-              <p>Experience</p>
-              <select onChange={e => setExperience(e.target.value)} value={experience} className='border rounded px-2 py-2' >
-                <option value="1 Year">1 Year</option>
-                <option value="2 Year">2 Years</option>
-                <option value="3 Year">3 Years</option>
-                <option value="4 Year">4 Years</option>
-                <option value="5 Year">5 Years</option>
-                <option value="6 Year">6 Years</option>
-                <option value="8 Year">8 Years</option>
-                <option value="9 Year">9 Years</option>
-                <option value="10 Year">10+ Years</option>
-              </select>
-            </div>
-
-            <div className='flex-1 flex flex-col gap-1'>
-              <p>Fees</p>
-              <input onChange={e => setFees(e.target.value)} value={fees} className='border rounded px-3 py-2' type="number" placeholder='Doctor fees' required />
-            </div>
-
+            <Input
+              label="Consultation Fees"
+              type="number"
+              value={fees}
+              setValue={setFees}
+            />
           </div>
 
-          <div className='w-full lg:flex-1 flex flex-col gap-4'>
+          <div className="space-y-4">
+            <Select
+              label="Speciality"
+              value={speciality}
+              setValue={setSpeciality}
+              options={[
+                'General physician',
+                'Gynecologist',
+                'Dermatologist',
+                'Pediatricians',
+                'Neurologist',
+                'Gastroenterologist',
+              ]}
+            />
 
-            <div className='flex-1 flex flex-col gap-1'>
-              <p>Speciality</p>
-              <select onChange={e => setSpeciality(e.target.value)} value={speciality} className='border rounded px-2 py-2'>
-                <option value="General physician">General physician</option>
-                <option value="Gynecologist">Gynecologist</option>
-                <option value="Dermatologist">Dermatologist</option>
-                <option value="Pediatricians">Pediatricians</option>
-                <option value="Neurologist">Neurologist</option>
-                <option value="Gastroenterologist">Gastroenterologist</option>
-              </select>
-            </div>
+            <Input label="Degree" value={degree} setValue={setDegree} />
 
-
-            <div className='flex-1 flex flex-col gap-1'>
-              <p>Degree</p>
-              <input onChange={e => setDegree(e.target.value)} value={degree} className='border rounded px-3 py-2' type="text" placeholder='Degree' required />
-            </div>
-
-            <div className='flex-1 flex flex-col gap-1'>
+            <div className="space-y-2">
               <p>Address</p>
-              <input onChange={e => setAddress1(e.target.value)} value={address1} className='border rounded px-3 py-2' type="text" placeholder='Address 1' required />
-              <input onChange={e => setAddress2(e.target.value)} value={address2} className='border rounded px-3 py-2' type="text" placeholder='Address 2' required />
+              <input
+                className="border rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary outline-none"
+                placeholder="Address line 1"
+                value={address1}
+                onChange={(e) => setAddress1(e.target.value)}
+                required
+              />
+              <input
+                className="border rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary outline-none"
+                placeholder="Address line 2"
+                value={address2}
+                onChange={(e) => setAddress2(e.target.value)}
+                required
+              />
             </div>
-
           </div>
-
         </div>
 
-        <div>
-          <p className='mt-4 mb-2'>About Doctor</p>
-          <textarea onChange={e => setAbout(e.target.value)} value={about} className='w-full px-4 pt-2 border rounded' rows={5} placeholder='write about doctor'></textarea>
+        <div className="mt-8">
+          <p className="mb-2">About Doctor</p>
+          <textarea
+            rows={5}
+            className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary outline-none resize-none"
+            placeholder="Write a short description about the doctor"
+            value={about}
+            onChange={(e) => setAbout(e.target.value)}
+          />
         </div>
 
-        <button type='submit' className='bg-primary px-10 py-3 mt-4 text-white rounded-full'>Add doctor</button>
-
+        {/* SUBMIT */}
+        <button
+          type="submit"
+          disabled={loading}
+          className={`mt-8 px-12 py-3 rounded-xl text-white font-medium transition
+            ${
+              loading
+                ? 'bg-gray-400 cursor-not-allowed'
+                : 'bg-primary hover:shadow-lg active:scale-95'
+            }`}
+        >
+          {loading ? 'Adding Doctor...' : 'Add Doctor'}
+        </button>
       </div>
-
-
     </form>
   )
 }
+
+
+const Input = ({ label, value, setValue, type = 'text' }) => (
+  <div className="flex flex-col gap-1">
+    <p>{label}</p>
+    <input
+      type={type}
+      value={value}
+      onChange={(e) => setValue(e.target.value)}
+      className="border rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary outline-none"
+      required
+    />
+  </div>
+)
+
+const Select = ({ label, value, setValue, options }) => (
+  <div className="flex flex-col gap-1">
+    <p>{label}</p>
+    <select
+      value={value}
+      onChange={(e) => setValue(e.target.value)}
+      className="border rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary outline-none"
+    >
+      {options.map((opt) => (
+        <option key={opt} value={opt}>
+          {opt}
+        </option>
+      ))}
+    </select>
+  </div>
+)
 
 export default AddDoctor

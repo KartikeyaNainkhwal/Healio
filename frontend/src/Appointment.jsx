@@ -20,7 +20,6 @@ const Appointment = () => {
   const fetchDocInfo = async () => {
     const doc = doctors.find((doc) => doc._id === docId)
     if (doc) {
-      // Ensure slots_booked is always at least an empty object
       setDocInfo({ ...doc, slots_booked: doc.slots_booked || {} })
     }
   }
@@ -151,11 +150,9 @@ const Appointment = () => {
           </div>
         </div>
 
-        {/* Booking Slots */}
         <div className='sm:ml-72 sm:pl-4 mt-8 font-medium text-[#565656]'>
           <p>Booking slots</p>
 
-          {/* Days Scroll */}
           <div className='flex gap-3 items-center w-full overflow-x-scroll mt-4'>
             {docSlots.length > 0 &&
               docSlots.map((item, index) => (
@@ -171,7 +168,6 @@ const Appointment = () => {
               ))}
           </div>
 
-          {/* Time Slots Scroll */}
           <div className='flex items-center gap-3 w-full overflow-x-scroll mt-4'>
             {docSlots.length > 0 &&
               docSlots[slotIndex] &&
@@ -189,7 +185,6 @@ const Appointment = () => {
               ))}
           </div>
 
-          {/* Book Button */}
           <button
             onClick={bookAppointment}
             className='bg-primary text-white text-sm font-light px-20 py-3 rounded-full my-6'
@@ -198,7 +193,6 @@ const Appointment = () => {
           </button>
         </div>
 
-        {/* Related Doctors */}
         <RelatedDoctors speciality={docInfo.speciality} docId={docId} />
       </div>
     )

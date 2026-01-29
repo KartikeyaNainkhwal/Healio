@@ -1,54 +1,127 @@
-import React, { useContext, useState, useEffect } from 'react'
+import React, { useContext, useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { AppContext } from '../context/AppContext'
+const DoctorSkeleton = () => {
+  return (
+    <div className="animate-pulse bg-white rounded-2xl shadow-sm">
+      <div className="h-48 bg-gray-200 rounded-t-2xl"></div>
+      <div className="p-4 space-y-3">
+        <div className="h-3 w-24 bg-gray-200 rounded"></div>
+        <div className="h-4 w-3/4 bg-gray-200 rounded"></div>
+        <div className="h-3 w-1/2 bg-gray-200 rounded"></div>
+      </div>
+    </div>
+  )
+}
 
-
+const SPECIALITIES = [
+  'General physician',
+  'Gynecologist',
+  'Dermatologist',
+  'Pediatricians',
+  'Neurologist',
+  'Gastroenterologist',
+]
 
 const Doctors = () => {
-
   const { speciality } = useParams()
-  const [filterDoc, setFilterDoc] = useState([])
-  const [showFilter, setShowFilter] = useState(false)
-  const navigate = useNavigate();
-
+  const navigate = useNavigate()
   const { doctors } = useContext(AppContext)
-  const applyFilter = () => {
-    if (speciality) {
-      setFilterDoc(doctors.filter(doc => doc.speciality === speciality))
-    } else {
-      setFilterDoc(doctors)
-    }
+
+  const [showFilter, setShowFilter] = useState(false)
+  const [search, setSearch] = useState('')
+
+  const filteredDoctors = useMemo(() => {
+    return doctors.filter(doc => {
+      const matchSpeciality = speciality ? doc.speciality === speciality : true
+      const matchSearch = doc.name.toLowerCase().includes(search.toLowerCase())
+      return matchSpeciality && matchSearch
+    })
+  }, [doctors, speciality, search])
+
+  const handleFilterClick = (spec) => {
+    navigate(speciality === spec ? '/doctors' : `/doctors/${spec}`)
+    setShowFilter(false)
   }
-  useEffect(() => {
-    applyFilter()
-  }, [doctors, speciality])
+
+  const isLoading = doctors.length === 0
 
   return (
-    <div>
-      <p className='text-gray-600'>Browse through the doctors specialist.</p>
-      <div className='flex flex-col sm:flex-row items-start gap-5 mt-5'>
-        <button onClick={() => setShowFilter(!showFilter)} className={`py-1 px-3 border rounded text-sm  transition-all sm:hidden ${showFilter ? 'bg-primary text-white' : ''}`}>Filters</button>
-        <div className={`flex-col gap-4 text-sm text-gray-600 ${showFilter ? 'flex' : 'hidden sm:flex'}`}>
-          <p onClick={() => speciality === 'General physician' ? navigate('/doctors') : navigate('/doctors/General physician')} className={`w-[94vw] sm:w-auto pl-3 py-1.5 pr-16 border border-gray-300 rounded transition-all cursor-pointer ${speciality === 'General physician' ? 'bg-[#E2E5FF] text-black ' : ''}`}>General physician</p>
-          <p onClick={() => speciality === 'Gynecologist' ? navigate('/doctors') : navigate('/doctors/Gynecologist')} className={`w-[94vw] sm:w-auto pl-3 py-1.5 pr-16 border border-gray-300 rounded transition-all cursor-pointer ${speciality === 'Gynecologist' ? 'bg-[#E2E5FF] text-black ' : ''}`}>Gynecologist</p>
-          <p onClick={() => speciality === 'Dermatologist' ? navigate('/doctors') : navigate('/doctors/Dermatologist')} className={`w-[94vw] sm:w-auto pl-3 py-1.5 pr-16 border border-gray-300 rounded transition-all cursor-pointer ${speciality === 'Dermatologist' ? 'bg-[#E2E5FF] text-black ' : ''}`}>Dermatologist</p>
-          <p onClick={() => speciality === 'Pediatricians' ? navigate('/doctors') : navigate('/doctors/Pediatricians')} className={`w-[94vw] sm:w-auto pl-3 py-1.5 pr-16 border border-gray-300 rounded transition-all cursor-pointer ${speciality === 'Pediatricians' ? 'bg-[#E2E5FF] text-black ' : ''}`}>Pediatricians</p>
-          <p onClick={() => speciality === 'Neurologist' ? navigate('/doctors') : navigate('/doctors/Neurologist')} className={`w-[94vw] sm:w-auto pl-3 py-1.5 pr-16 border border-gray-300 rounded transition-all cursor-pointer ${speciality === 'Neurologist' ? 'bg-[#E2E5FF] text-black ' : ''}`}>Neurologist</p>
-          <p onClick={() => speciality === 'Gastroenterologist' ? navigate('/doctors') : navigate('/doctors/Gastroenterologist')} className={`w-[94vw] sm:w-auto pl-3 py-1.5 pr-16 border border-gray-300 rounded transition-all cursor-pointer ${speciality === 'Gastroenterologist' ? 'bg-[#E2E5FF] text-black ' : ''}`}>Gastroenterologist</p>
-        </div>
-        <div className='w-full grid grid-cols-auto gap-4 gap-y-6'>
-          {filterDoc.map((item, index) => (
-            <div onClick={() => { navigate(`/appointment/${item._id}`); scrollTo(0, 0) }} className='border border-[#C9D8FF] rounded-xl overflow-hidden cursor-pointer hover:translate-y-[-10px] transition-all duration-500' key={index}>
-              <img className='bg-[#EAEFFF]' src={item.image} alt="" />
-              <div className='p-4'>
-                <div className={`flex items-center gap-2 text-sm text-center ${item.available ? 'text-green-500' : "text-gray-500"}`}>
-                  <p className={`w-2 h-2 rounded-full ${item.available ? 'bg-green-500' : "bg-gray-500"}`}></p><p>{item.available ? 'Available' : "Not Available"}</p>
-                </div>
-                <p className='text-[#262626] text-lg font-medium'>{item.name}</p>
-                <p className='text-[#5C5C5C] text-sm'>{item.speciality}</p>
-              </div>
-            </div>
+    <div className="max-w-7xl mx-auto px-4 py-16 space-y-6">
+      <h2 className="text-2xl font-semibold text-gray-800">Find Your Doctor</h2>
+      <p className="text-gray-500 mt-1">
+        Search and book appointments with top specialists
+      </p>
+
+      <input
+        type="text"
+        placeholder="Search doctor by name..."
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        className="mt-4 w-full sm:w-96 px-4 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-primary"
+      />
+
+      <div className="flex flex-col sm:flex-row gap-6 mt-6">
+        <button
+          onClick={() => setShowFilter(prev => !prev)}
+          className="sm:hidden border px-4 py-2 rounded-lg text-sm"
+        >
+          Filters
+        </button>
+
+        <div className={`flex sm:flex-col gap-2 flex-wrap ${showFilter ? 'flex' : 'hidden sm:flex'}`}>
+          {SPECIALITIES.map(spec => (
+            <button
+              key={spec}
+              onClick={() => handleFilterClick(spec)}
+              className={`px-4 py-2 rounded-full text-sm border transition
+                ${speciality === spec
+                  ? 'bg-primary text-white border-primary'
+                  : 'bg-white text-gray-600 hover:bg-gray-100'}
+              `}
+            >
+              {spec}
+            </button>
           ))}
+        </div>
+
+        <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {isLoading
+            ? Array.from({ length: 6 }).map((_, i) => <DoctorSkeleton key={i} />)
+            : filteredDoctors.map(doc => (
+                <div
+                  key={doc._id}
+                  onClick={() => {
+                    navigate(`/appointment/${doc._id}`)
+                    window.scrollTo(0, 0)
+                  }}
+                  className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition cursor-pointer"
+                >
+                  <img
+                    src={doc.image}
+                    alt={doc.name}
+                    className="h-48 w-full object-cover rounded-t-2xl bg-[#EAEFFF]"
+                  />
+
+                  <div className="p-4">
+                    <div className="flex items-center gap-2 text-sm">
+                      <span
+                        className={`w-2 h-2 rounded-full ${
+                          doc.available ? 'bg-green-500' : 'bg-gray-400'
+                        }`}
+                      />
+                      <span className={doc.available ? 'text-green-600' : 'text-gray-500'}>
+                        {doc.available ? 'Available' : 'Not Available'}
+                      </span>
+                    </div>
+
+                    <h3 className="mt-2 text-lg font-semibold text-gray-800">
+                      {doc.name}
+                    </h3>
+                    <p className="text-sm text-gray-500">{doc.speciality}</p>
+                  </div>
+                </div>
+              ))}
         </div>
       </div>
     </div>
